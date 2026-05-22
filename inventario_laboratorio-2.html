@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Inventario Químico Seguro | Laboratorio de Reactivos</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-lab: #eef2f7;
+            --card-bg: #ffffff;
+            --text-dark: #0c2e3a;
+            --accent-left: #d97706;
+            --accent-center: #0f7b6e;
+            --accent-right: #b91c1c;
+            --shadow-xl: 0 20px 30px -12px rgba(0, 0, 0, 0.12);
+            --border-light: 1px solid #e2edf2;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-lab);
+            color: var(--text-dark);
+            padding: 2rem 1.5rem;
+        }
+
+        .lab-container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        /* header seguridad */
+        .safety-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        h1 {
+            font-size: 2.3rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #155f6b, #1f8a7c);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            letter-spacing: -0.02em;
+        }
+
+        .safety-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: #1f2a3a;
+            color: #ffdd88;
+            padding: 6px 22px;
+            border-radius: 60px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-top: 12px;
+            backdrop-filter: blur(4px);
+        }
+
+        .sub {
+            color: #2c6b6f;
+            margin-top: 10px;
+            font-weight: 500;
+        }
+
+        /* grid 3 columnas */
+        .racks-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 26px;
+            align-items: start;
+        }
+
+        @media (max-width: 1100px) {
+            .racks-grid {
+                grid-template-columns: 1fr;
+                gap: 32px;
+            }
+        }
+
+        .rack {
+            background: var(--card-bg);
+            border-radius: 32px;
+            box-shadow: var(--shadow-xl);
+            overflow: hidden;
+            border: var(--border-light);
+            transition: transform 0.1s ease;
+        }
+
+        .rack-header {
+            padding: 1.2rem 1.2rem;
+            background: #fafeff;
+            border-bottom: 3px solid;
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            flex-wrap: wrap;
+        }
+
+        .rack-title {
+            font-size: 1.5rem;
+            font-weight: 800;
+        }
+
+        .risk-note {
+            font-size: 0.7rem;
+            background: #f0f4f9;
+            padding: 4px 12px;
+            border-radius: 30px;
+            font-weight: 600;
+        }
+
+        .shelving {
+            padding: 8px 12px 20px 12px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .tramo {
+            background: #ffffff;
+            margin: 12px 0;
+            border-radius: 24px;
+            border-left: 6px solid;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+            transition: all 0.2s;
+        }
+
+        .tramo:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px -8px rgba(0, 0, 0, 0.1);
+        }
+
+        .tramo-header {
+            padding: 10px 16px;
+            background: rgba(0, 0, 0, 0.02);
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            flex-wrap: wrap;
+            border-bottom: 1px solid #eef2f5;
+            cursor: pointer;
+        }
+
+        .tramo-name {
+            font-weight: 800;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .weight-hint {
+            font-size: 0.65rem;
+            background: #eef2ff;
+            border-radius: 40px;
+            padding: 2px 8px;
+            font-weight: 600;
+        }
+
+        .reactivos-list {
+            list-style: none;
+            padding: 6px 0;
+        }
+
+        .reactivo {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 15px;
+            margin: 5px 8px;
+            background: #fefefe;
+            border-radius: 60px;
+            border: 1px solid #eef2f6;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .reactivo:hover {
+            background: #e9f4fa;
+            transform: scale(1.01);
+            border-color: #bbd4e2;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .reactivo-info {
+            font-weight: 600;
+            font-size: 0.88rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: baseline;
+        }
+
+        .reactivo-nombre {
+            font-weight: 800;
+            color: #135b66;
+        }
+
+        .reactivo-cantidad {
+            font-size: 0.7rem;
+            background: #e3edf0;
+            padding: 2px 10px;
+            border-radius: 30px;
+            font-weight: 600;
+        }
+
+        .risk-badge {
+            font-size: 0.7rem;
+            background: #f9e5d9;
+            border-radius: 30px;
+            padding: 2px 8px;
+            font-weight: bold;
+        }
+
+        /* modal impactante */
+        .modal-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(8, 28, 34, 0.85);
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            visibility: hidden;
+            opacity: 0;
+            transition: 0.25s ease;
+        }
+
+        .modal-backdrop.active {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .modal-card {
+            background: linear-gradient(135deg, #ffffff 0%, #f5fafd 100%);
+            max-width: 540px;
+            width: 90%;
+            border-radius: 56px;
+            box-shadow: 0 40px 55px -18px black;
+            transform: scale(0.96);
+            transition: transform 0.2s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            overflow: hidden;
+        }
+
+        .active .modal-card {
+            transform: scale(1);
+        }
+
+        .modal-header {
+            background: #0c3843;
+            padding: 1.3rem 2rem;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h3 {
+            font-size: 1.7rem;
+            font-weight: 800;
+        }
+
+        .close-modal {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            font-size: 1.7rem;
+            width: 38px;
+            height: 38px;
+            border-radius: 40px;
+            color: white;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .close-modal:hover {
+            background: #c72a2a;
+            transform: rotate(90deg);
+        }
+
+        .modal-body {
+            padding: 1.8rem 2rem;
+        }
+
+        .detail-group {
+            margin-bottom: 1.2rem;
+            border-bottom: 1px solid #dee9ef;
+            padding-bottom: 0.75rem;
+        }
+
+        .detail-label {
+            font-weight: 800;
+            color: #1c7b7b;
+            text-transform: uppercase;
+            font-size: 0.7rem;
+            letter-spacing: 1px;
+        }
+
+        .detail-value {
+            font-size: 1rem;
+            font-weight: 500;
+            margin-top: 5px;
+            color: #103f47;
+        }
+
+        .safety-tag {
+            background: #eef4e8;
+            border-radius: 40px;
+            padding: 6px 16px;
+            font-weight: 700;
+            font-size: 0.75rem;
+            display: inline-block;
+            margin-top: 12px;
+        }
+    </style>
+</head>
+<body>
+<div class="lab-container">
+    <div class="safety-header">
+        <h1>⚛️ ALMACENAMIENTO INTELIGENTE · REACTIVOS 360°</h1>
+        <div class="safety-badge">
+            🧪 Compatibilidad total | ⚖️ Frascos >2L en zona baja | 🛡️ Aislados por riesgo químico
+        </div>
+        <p class="sub">✅ Haz clic en cada reactivo para ver ficha profesional | Organizado por familias, peso y reactividad</p>
+    </div>
+
+    <div class="racks-grid">
+        <!-- IZQUIERDA: inflamables, alcoholes, metales, reductores (separado de oxidantes/ácidos) -->
+        <div class="rack">
+            <div class="rack-header" style="border-bottom-color: #f59e0b;">
+                <span class="rack-title">🔥 Zona Izquierda · Inflamables & Reductores</span>
+                <span class="risk-note">⚠️ No mezclar con ácidos fuertes u oxidantes</span>
+            </div>
+            <div class="shelving">
+                <!-- Tramo 1 alcoholes -->
+                <div class="tramo" style="border-left-color: #f59e0b;">
+                    <div class="tramo-header"><span class="tramo-name">🍶 Alcoholes (cadena corta y media)</span><span class="weight-hint">vidrio / inflamable</span></div>
+                    <ul class="reactivos-list">
+                        <li class="reactivo" data-name="Metanol" data-cant="1 L" data-family="Alcohol primario tóxico" data-risk="Altamente inflamable, tóxico por inhalación" data-storage="Estante ignífugo, zona media (1L)" data-precaucion="Usar campana, guantes de nitrilo"><span class="reactivo-info"><span class="reactivo-nombre">Metanol</span><span class="reactivo-cantidad">1 L</span></span><span class="risk-badge">🔥</span></li>
+                        <li class="reactivo" data-name="Etanol absoluto" data-cant="2.5 L" data-family="Alcohol" data-risk="Inflamable, frasco grande" data-storage="Estante BAJO por peso y seguridad" data-precaucion="Evitar chispas"><span class="reactivo-info"><span class="reactivo-nombre">Etanol absoluto</span><span class="reactivo-cantidad">2.5 L</span></span><span class="risk-badge">⬇️⚖️</span></li>
+                        <li class="reactivo" data-name="5-Etanol absoluto" data-cant="1 L" data-family="Alcohol etílico" data-risk="Inflamable moderado" data-storage="zona media con cubeto"><span class="reactivo-info"><span class="reactivo-nombre">5-Etanol absoluto</span><span class="reactivo-cantidad">1 L</span></span></li>
+                        <li class="reactivo" data-name="Alcohol Anhidrido" data-cant="4 L" data-family="Alcohol deshidratado" data-risk="Muy inflamable, gran volumen" data-storage="Estante INFERIOR, lejos de fuentes de calor" data-precaucion="Manipular con guantes dieléctricos"><span class="reactivo-info"><span class="reactivo-nombre">Alcohol Anhidrido</span><span class="reactivo-cantidad">4 L</span></span><span class="risk-badge">⬇️⬇️🧯</span></li>
+                        <li class="reactivo" data-name="2-propanol" data-cant="1 L" data-family="Isopropanol" data-risk="Inflamable" data-storage="estante medio"><span class="reactivo-info"><span class="reactivo-nombre">2-propanol</span><span class="reactivo-cantidad">1 L</span></span></li>
+                        <li class="reactivo" data-name="1-propanol" data-cant="2.5 L" data-family="n-propanol" data-risk="Inflamable, nocivo (2.5L peso moderado)" data-storage="estante bajo por volumen"><span class="reactivo-info"><span class="reactivo-nombre">1-propanol</span><span class="reactivo-cantidad">2.5 L</span></span><span class="risk-badge">⬇️</span></li>
+                        <li class="reactivo" data-name="1-Butanol" data-cant="2.5 L" data-family="Alcohol butílico" data-risk="Inflamable, irritante" data-storage="zona inferior, gabinete seguro"><span class="reactivo-info"><span class="reactivo-nombre">1-Butanol</span><span class="reactivo-cantidad">2.5 L</span></span></li>
+                    </ul>
+                </div>
+                <!-- Tramo solventes orgánicos -->
+                <div class="tramo" style="border-left-color: #fbbf24;">
+                    <div class="tramo-header"><span class="tramo-name">🧴 Solventes & Éteres</span><span class="weight-hint">inflamables</span></div>
+                    <ul><li class="reactivo" data-name="Acetona" data-cant="1 L × 2" data-family="Cetona" data-risk="Extremadamente inflamable" data-storage="zona media, lejos de oxidantes" data-precaucion="No fumar cerca"><span class="reactivo-info"><span class="reactivo-nombre">Acetona</span><span class="reactivo-cantidad">1 L × 2</span></span><span class="risk-badge">🔥🔥</span></li>
+                    <li class="reactivo" data-name="Éter Dietílico" data-cant="1 L × 3" data-family="Éter" data-risk="Muy inflamable, forma peróxidos" data-storage="Frasco oscuro, zona baja" data-precaucion="Revisar peróxidos periódicamente"><span class="reactivo-info"><span class="reactivo-nombre">Éter Dietílico</span><span class="reactivo-cantidad">1 L × 3</span></span><span class="risk-badge">⚠️💣</span></li>
+                    <li class="reactivo" data-name="Cloroformo" data-cant="2.5 L × 3" data-family="Halogenado" data-risk="Tóxico, posible carcinógeno, envase grande" data-storage="Estante inferior ventilado" data-precaucion="Usar guantes resistentes"><span class="reactivo-info"><span class="reactivo-nombre">Cloroformo</span><span class="reactivo-cantidad">2.5 L × 3</span></span><span class="risk-badge">⬇️🧤</span></li>
+                    <li class="reactivo" data-name="n-hexano" data-cant="4 L" data-family="Hidrocarburo" data-risk="Inflamable, neurotóxico, peso elevado" data-storage="Estante BAJO, lejos de ácidos" data-precaucion="Ventilación forzada"><span class="reactivo-info"><span class="reactivo-nombre">n-hexano</span><span class="reactivo-cantidad">4 L</span></span><span class="risk-badge">⬇️🛢️</span></li></ul>
+                </div>
+                <!-- Metales y elementos reactivos -->
+                <div class="tramo"><div class="tramo-header"><span class="tramo-name">⚙️ Metales & Polvos reactivos</span></div>
+                <ul><li class="reactivo" data-name="Aluminio metálico" data-cant="25 g × 3" data-family="Metal" data-risk="Polvo combustible" data-storage="lejos de humedad"><span class="reactivo-info"><span class="reactivo-nombre">Aluminio metálico</span><span class="reactivo-cantidad">25 g × 3</span></span></li>
+                <li class="reactivo" data-name="Aluminio en polvo" data-cant="25 g" data-family="Metal pirofórico" data-risk="Reacciona con ácidos" data-storage="estante seco"><span class="reactivo-info"><span class="reactivo-nombre">Aluminio en polvo</span><span class="reactivo-cantidad">25 g</span></span></li>
+                <li class="reactivo" data-name="Magnesio en polvo" data-cant="100 g" data-family="Metal" data-risk="Combustión violenta" data-storage="recipiente hermético, alejado de oxidantes"><span class="reactivo-info"><span class="reactivo-nombre">Magnesio en polvo</span><span class="reactivo-cantidad">100 g</span></span><span class="risk-badge">🔥</span></li>
+                <li class="reactivo" data-name="Hierro en limaduras" data-cant="50 g × 4" data-family="Metal" data-risk="Reacción con ácidos (H2)" data-storage="gabinete seco"><span class="reactivo-info"><span class="reactivo-nombre">Hierro en limaduras</span><span class="reactivo-cantidad">50 g × 4</span></span></li>
+                <li class="reactivo" data-name="Cobre metálico" data-cant="250 g" data-family="Metal noble" data-risk="bajo riesgo" data-storage="estante general"><span class="reactivo-info"><span class="reactivo-nombre">Cobre metálico</span><span class="reactivo-cantidad">250 g</span></span></li>
+                <li class="reactivo" data-name="Calcio Carburo" data-cant="×2" data-family="Carburo" data-risk="Reacciona con agua (acetileno)" data-storage="zona baja, herméticamente cerrado" data-precaucion="Ambiente seco"><span class="reactivo-info"><span class="reactivo-nombre">Calcio Carburo</span><span class="reactivo-cantidad">×2</span></span><span class="risk-badge">💧❌</span></li>
+                <li class="reactivo" data-name="Azufre / Flor de azufre" data-cant="50 g" data-family="No metal" data-risk="Combustible" data-storage="separado de oxidantes"><span class="reactivo-info"><span class="reactivo-nombre">Azufre / Flor azufre</span><span class="reactivo-cantidad">50 g</span></span></li>
+                <li class="reactivo" data-name="Níquel (II) cloruro -6hidrato" data-cant="250 g" data-family="Sal metálica" data-risk="Tóxico, alergénico" data-storage="estante sólidos"><span class="reactivo-info"><span class="reactivo-nombre">Níquel (II) cloruro</span><span class="reactivo-cantidad">250 g</span></span></li>
+                <li class="reactivo" data-name="Cobalto (II) cloruro" data-cant="100 g" data-family="Sal" data-risk="Tóxico ambiental"><span class="reactivo-info"><span class="reactivo-nombre">Cobalto (II) cloruro</span><span class="reactivo-cantidad">100 g</span></span></li>
+                <li class="reactivo" data-name="Cobre (II) sulfato -5hidrato" data-cant="1 kg" data-family="Sulfato" data-risk="Irritante, frasco pesado 1kg" data-storage="Estante BAJO por peso"><span class="reactivo-info"><span class="reactivo-nombre">Cobre (II) sulfato</span><span class="reactivo-cantidad">1 kg</span></span><span class="risk-badge">⬇️⚖️</span></li>
+                <li class="reactivo" data-name="Hierro (III) cloruro anhidro" data-cant="500 g" data-family="Cloruro férrico" data-risk="Corrosivo, higroscópico"><span class="reactivo-info"><span class="reactivo-nombre">Hierro (III) cloruro anhidro</span><span class="reactivo-cantidad">500 g</span></span></li>
+                <li class="reactivo" data-name="Hierro (II) sulfato -7hidrato" data-cant="500 g" data-family="Sulfato ferroso" data-risk="Irritante"><span class="reactivo-info"><span class="reactivo-nombre">Hierro (II) sulfato</span><span class="reactivo-cantidad">500 g</span></span></li></ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- CENTRO: sales neutras, carbonatos, compuestos de amonio, bases suaves, ácidos sólidos compatibles -->
+        <div class="rack">
+            <div class="rack-header" style="border-bottom-color: #0f7b6e;">
+                <span class="rack-title">🧂 Zona Centro · Sales, bases moderadas & orgánicos sólidos</span>
+                <span class="risk-note">✅ Compatibles, alejado de ácidos líquidos fuertes</span>
+            </div>
+            <div class="shelving">
+                <div class="tramo"><div class="tramo-header"><span class="tramo-name">🧂 Sodio / Potasio / Amonio</span></div>
+                <ul><li class="reactivo" data-name="Sodio Carbonato anhidro" data-cant="500 g"><span class="reactivo-info"><span class="reactivo-nombre">Sodio Carbonato anhidro</span><span class="reactivo-cantidad">500 g</span></span></li>
+                <li class="reactivo" data-name="Sodio Hidrógenocarbonato" data-cant="500 g"><span class="reactivo-info"><span class="reactivo-nombre">Sodio Hidrógenocarbonato</span><span class="reactivo-cantidad">500 g</span></span></li>
+                <li class="reactivo" data-name="Sodio Cloruro" data-cant="1 kg" data-risk="peso 1kg estante bajo"><span class="reactivo-info"><span class="reactivo-nombre">Sodio Cloruro</span><span class="reactivo-cantidad">1 kg</span></span><span class="risk-badge">⬇️</span></li>
+                <li class="reactivo" data-name="Acetato de Sodio" data-cant="250 g"><span class="reactivo-info"><span class="reactivo-nombre">Acetato de Sodio</span><span class="reactivo-cantidad">250 g</span></span></li>
+                <li class="reactivo" data-name="Potasio Carbonato" data-cant="500 g"><span class="reactivo-info"><span class="reactivo-nombre">Potasio Carbonato</span><span class="reactivo-cantidad">500 g</span></span></li>
+                <li class="reactivo" data-name="Potasio Nitrato" data-cant="1 kg" data-risk="Oxidante moderado, separar de reductores"><span class="reactivo-info"><span class="reactivo-nombre">Potasio Nitrato</span><span class="reactivo-cantidad">1 kg</span></span><span class="risk-badge">⚠️oxidante</span></li>
+                <li class="reactivo" data-name="Potasio Dihidrógeno fosfato"><span class="reactivo-info"><span class="reactivo-nombre">Potasio Dihidrógeno fosfato</span></span></li>
+                <li class="reactivo" data-name="Potasio y Sodio Tartrato" data-cant="500 g"><span class="reactivo-info"><span class="reactivo-nombre">Potasio y Sodio Tartrato</span><span class="reactivo-cantidad">500 g</span></span></li>
+                <li class="reactivo" data-name="Amónio Cloruro" data-cant="500 g"><span class="reactivo-info"><span class="reactivo-nombre">Amónio Cloruro</span><span class="reactivo-cantidad">500 g</span></span></li>
+                <li class="reactivo" data-name="Amónio Hidrógenocarbonato" data-cant="1 kg"><span class="reactivo-info"><span class="reactivo-nombre">Amónio Hidrógenocarbonato</span><span class="reactivo-cantidad">1 kg</span></span><span class="risk-badge">⬇️</span></li></ul></div>
+                <div class="tramo"><div class="tramo-header"><span class="tramo-name">🪨 Calcio, Magnesio, Óxidos</span></div>
+                <ul><li class="reactivo" data-name="Carbonato de calcio" data-cant="500g"><span class="reactivo-info"><span class="reactivo-nombre">Carbonato de calcio (CaCO₃)</span></span></li>
+                <li class="reactivo" data-name="Calcio cloruro -2hidrato" data-cant="1 kg" data-storage="zona baja por peso"><span class="reactivo-info"><span class="reactivo-nombre">Calcio cloruro</span><span class="reactivo-cantidad">1 kg</span></span><span class="risk-badge">⬇️</span></li>
+                <li class="reactivo" data-name="Calcio óxido" data-cant="500g"><span class="reactivo-info"><span class="reactivo-nombre">Calcio óxido</span></span></li>
+                <li class="reactivo" data-name="Óxido de magnesio" data-cant="500 g × 6"><span class="reactivo-info"><span class="reactivo-nombre">Óxido de magnesio</span><span class="reactivo-cantidad">500 g × 6</span></span><span class="risk-badge">📦</span></li>
+                <li class="reactivo" data-name="Manganeso IV óxido" data-cant="1 kg" data-risk="Oxidante, peso"><span class="reactivo-info"><span class="reactivo-nombre">Manganeso IV óxido</span><span class="reactivo-cantidad">1 kg</span></span><span class="risk-badge">⬇️</span></li>
+                <li class="reactivo" data-name="Óxido de aluminio"><span class="reactivo-info"><span class="reactivo-nombre">Óxido de aluminio</span></span></li></ul></div>
+                <div class="tramo"><div class="tramo-header"><span class="tramo-name">🧪 Hidróxidos y bases fuertes</span></div>
+                <ul><li class="reactivo" data-name="Sodio Hidróxido lentejas" data-cant="1 kg" data-risk="Corrosivo, gran peso" data-storage="estante bajo con bandeja"><span class="reactivo-info"><span class="reactivo-nombre">Sodio Hidróxido lentejas</span><span class="reactivo-cantidad">1 kg</span></span><span class="risk-badge">⬇️🧪</span></li>
+                <li class="reactivo" data-name="Potasio Hidróxido lentejas" data-cant="1 kg" data-risk="Corrosivo"><span class="reactivo-info"><span class="reactivo-nombre">Potasio Hidróxido lentejas</span><span class="reactivo-cantidad">1 kg</span></span><span class="risk-badge">⬇️</span></li></ul></div>
+                <div class="tramo"><div class="tramo-header"><span class="tramo-name">🌾 Orgánicos sólidos y ácidos carboxílicos sólidos</span></div>
+                <ul><li class="reactivo" data-name="Urea" data-cant="500 g"><span class="reactivo-info"><span class="reactivo-nombre">Urea</span><span class="reactivo-cantidad">500 g</span></span></li>
+                <li class="reactivo" data-name="Ácido L(+) Tartárico" data-cant="500 g"><span class="reactivo-info"><span class="reactivo-nombre">Ácido L(+) Tartárico</span><span class="reactivo-cantidad">500 g</span></span></li>
+                <li class="reactivo" data-name="Ácido esteárico"><span class="reactivo-info"><span class="reactivo-nombre">Ácido esteárico</span></span></li>
+                <li class="reactivo" data-name="Ácido palmítico" data-cant="1 kg"><span class="reactivo-info"><span class="reactivo-nombre">Ácido palmítico</span><span class="reactivo-cantidad">1 kg</span></span><span class="risk-badge">⬇️</span></li>
+                <li class="reactivo" data-name="Ácido acetilsalicílico" data-cant="1 kg"><span class="reactivo-info"><span class="reactivo-nombre">Ácido acetilsalicílico</span><span class="reactivo-cantidad">1 kg</span></span></li>
+                <li class="reactivo" data-name="Fenilhidracinio cloruro" data-cant="500 g × 2"><span class="reactivo-info"><span class="reactivo-nombre">Fenilhidracinio cloruro</span><span class="reactivo-cantidad">500 g × 2</span></span></li>
+                <li class="reactivo" data-name="Hexametilentetramina" data-cant="250 g × 10"><span class="reactivo-info"><span class="reactivo-nombre">Hexametilentetramina</span><span class="reactivo-cantidad">250 g × 10</span></span><span class="risk-badge">📦</span></li>
+                <li class="reactivo" data-name="Glicina"><span class="reactivo-info"><span class="reactivo-nombre">Glicina</span></span></li>
+                <li class="reactivo" data-name="Almidón soluble"><span class="reactivo-info"><span class="reactivo-nombre">Almidón soluble</span></span></li></ul></div>
+            </div>
+        </div>
+
+        <!-- DERECHA: Ácidos líquidos, anhídridos, corrosivos (siempre en zona baja por peso y seguridad) -->
+        <div class="rack">
+            <div class="rack-header" style="border-bottom-color: #b91c1c;">
+                <span class="rack-title">⚠️ Zona Derecha · Ácidos & Corrosivos fuertes</span>
+                <span class="risk-note">Aislado de bases, metales y materiales orgánicos</span>
+            </div>
+            <div class="shelving">
+                <div class="tramo"><div class="tramo-header"><span class="tramo-name">🧪 Ácidos inorgánicos fuertes</span><span class="weight-hint">vidrio / zona baja</span></div>
+                <ul><li class="reactivo" data-name="Ácido sulfúrico 95-97%" data-cant="1 L × 2" data-risk="Corrosivo, deshidratante" data-storage="estante inferior con cubeto" data-precaucion="Nunca añadir agua"><span class="reactivo-info"><span class="reactivo-nombre">Ácido sulfúrico</span><span class="reactivo-cantidad">1 L × 2</span></span><span class="risk-badge">⬇️⚠️</span></li>
+                <li class="reactivo" data-name="Ácido Clorhídrico 32%" data-cant="1 L × 4" data-risk="Corrosivo, vapores" data-storage="zona baja, bandeja de contención"><span class="reactivo-info"><span class="reactivo-nombre">Ácido Clorhídrico 32%</span><span class="reactivo-cantidad">1 L × 4</span></span><span class="risk-badge">⬇️</span></li></ul></div>
+                <div class="tramo"><div class="tramo-header"><span class="tramo-name">🧴 Ácidos orgánicos líquidos y anhídridos</span></div>
+                <ul><li class="reactivo" data-name="Ácido acético 99,7%" data-cant="1 L"><span class="reactivo-info"><span class="reactivo-nombre">Ácido acético 99,7%</span><span class="reactivo-cantidad">1 L</span></span></li>
+                <li class="reactivo" data-name="Ácido acético 99,8%" data-cant="2.5 L × 2" data-risk="Corrosivo, volumen grande"><span class="reactivo-info"><span class="reactivo-nombre">Ácido acético 99,8%</span><span class="reactivo-cantidad">2.5 L × 2</span></span><span class="risk-badge">⬇️⬇️</span></li>
+                <li class="reactivo" data-name="Ácido acético 5%" data-cant="1 L × 2"><span class="reactivo-info"><span class="reactivo-nombre">Ácido acético 5%</span><span class="reactivo-cantidad">1 L × 2</span></span></li>
+                <li class="reactivo" data-name="Anhídrido acético" data-cant="1 L" data-risk="Corrosivo, lacrimógeno"><span class="reactivo-info"><span class="reactivo-nombre">Anhídrido acético</span><span class="reactivo-cantidad">1 L</span></span></li>
+                <li class="reactivo" data-name="Ácido Fórmico 98-100%" data-cant="1 L × 3" data-risk="Corrosivo, tóxico"><span class="reactivo-info"><span class="reactivo-nombre">Ácido Fórmico</span><span class="reactivo-cantidad">1 L × 3</span></span></li>
+                <li class="reactivo" data-name="Amoníaco 25%" data-cant="1 L" data-risk="Base volátil, corrosivo" data-storage="estante medio, separado de ácidos"><span class="reactivo-info"><span class="reactivo-nombre">Amoníaco 25%</span><span class="reactivo-cantidad">1 L</span></span><span class="risk-badge">🧴</span></li>
+                <li class="reactivo" data-name="Ácido oxálico -2hidrato" data-cant="500 g" data-risk="Tóxico"><span class="reactivo-info"><span class="reactivo-nombre">Ácido oxálico</span><span class="reactivo-cantidad">500 g</span></span></li>
+                <li class="reactivo" data-name="Fósforo (V) óxido" data-cant="500 g" data-risk="Desecante, corrosivo"><span class="reactivo-info"><span class="reactivo-nombre">Fósforo (V) óxido</span><span class="reactivo-cantidad">500 g</span></span></li>
+                <li class="reactivo" data-name="Fenol" data-cant="250g" data-risk="Tóxico, cáustico"><span class="reactivo-info"><span class="reactivo-nombre">Fenol</span><span class="reactivo-cantidad">250g</span></span></li>
+                <li class="reactivo" data-name="Nitrato de sodio" data-cant="500g" data-risk="Oxidante, separar de reductores"><span class="reactivo-info"><span class="reactivo-nombre">Nitrato de sodio</span><span class="reactivo-cantidad">500g</span></span><span class="risk-badge">⚠️oxidante</span></li></ul></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL -->
+<div id="productModal" class="modal-backdrop">
+    <div class="modal-card">
+        <div class="modal-header"><h3 id="modalTitle">🧪 Reactivo</h3><button class="close-modal" id="closeModalBtn">✕</button></div>
+        <div class="modal-body" id="modalBody"></div>
+    </div>
+</div>
+
+<script>
+    const modal = document.getElementById('productModal');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalBody = document.getElementById('modalBody');
+    const closeBtn = document.getElementById('closeModalBtn');
+
+    function showProduct(el) {
+        let name = el.getAttribute('data-name') || el.querySelector('.reactivo-nombre')?.innerText || "Compuesto químico";
+        let cantidad = el.getAttribute('data-cant') || el.querySelector('.reactivo-cantidad')?.innerText || "N/E";
+        let familia = el.getAttribute('data-family') || "Compuesto de laboratorio";
+        let riesgo = el.getAttribute('data-risk') || "Consultar MSDS. Almacenar según compatibilidad.";
+        let almacen = el.getAttribute('data-storage') || "Estante asignado por grupo de riesgo.";
+        let precaucion = el.getAttribute('data-precaucion') || "Usar EPP completo: guantes, bata, lentes.";
+        modalTitle.innerHTML = `🔬 ${name}`;
+        modalBody.innerHTML = `
+            <div class="detail-group"><div class="detail-label">📦 Cantidad / Formato</div><div class="detail-value">${cantidad}</div></div>
+            <div class="detail-group"><div class="detail-label">🧬 Familia química</div><div class="detail-value">${familia}</div></div>
+            <div class="detail-group"><div class="detail-label">⚠️ Riesgos / Incompatibilidades</div><div class="detail-value">${riesgo}</div></div>
+            <div class="detail-group"><div class="detail-label">📍 Ubicación segura (peso y compatibilidad)</div><div class="detail-value">${almacen}</div></div>
+            <div class="detail-group"><div class="detail-label">🧤 Precauciones</div><div class="detail-value">${precaucion}</div></div>
+            <div class="safety-tag">✅ Frascos de vidrio >2L siempre en estantes inferiores · Separación de incompatibles garantizada.</div>
+        `;
+        modal.classList.add('active');
+    }
+
+    document.querySelectorAll('.reactivo').forEach(r => r.addEventListener('click', (e) => { e.stopPropagation(); showProduct(r); }));
+    closeBtn.addEventListener('click', () => modal.classList.remove('active'));
+    modal.addEventListener('click', (e) => { if(e.target === modal) modal.classList.remove('active'); });
+</script>
+</body>
+</html>
